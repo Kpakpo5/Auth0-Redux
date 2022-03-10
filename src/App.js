@@ -1,23 +1,30 @@
-import logo from './logo.svg';
+import LoginButton from './components/LoginButton';
+import LogoutButton from './components/LogoutButton';
+import Profile from './components/Profile';
+import { useAuth0 } from "@auth0/auth0-react";
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { userLogin } from './redux/user';
+
 import './App.css';
 
 function App() {
+  const { isAuthenticated, user } = useAuth0();
+  const dispatch = useDispatch();
+  const userIsLoggedIn = useSelector((state) => state.user.value.isLoggedIn);
+
+  useEffect(() => {
+    if (isAuthenticated && user) dispatch(userLogin({name: user.name, picture:user.picture, email: user.email, isLoggedIn : true}))
+  })
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      {userIsLoggedIn ?(
+        <LogoutButton />
+      ):(
+        <LoginButton />
+      )}
+      <Profile />
     </div>
   );
 }
